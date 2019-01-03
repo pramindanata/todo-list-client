@@ -1,4 +1,5 @@
-# todo-list-2
+# Todo List - Client
+Todo List app using Vue + Vuetify
 
 ## Project setup
 ```
