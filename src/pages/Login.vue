@@ -2,7 +2,7 @@
   <v-flex sm8 md6 lg3>
     <v-card>
       <v-card-title class="justify-center" primary-title>
-        <h2 class="font-weight-light">Welcome back</h2>
+        <h2 class="font-weight-light primary--text">Welcome back</h2>
       </v-card-title>
 
       <v-card-text>
@@ -38,7 +38,7 @@
 
           <v-btn
             block
-            color="warning"
+            color="secondary"
             @click="reset"
           >
             Reset

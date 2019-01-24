@@ -1,8 +1,7 @@
 <template>
-  <v-footer height="auto">
+  <v-footer height="auto" color="primary">
     <v-layout justify-center>
       <v-flex
-        green
         py-3
         text-xs-center
         white--text

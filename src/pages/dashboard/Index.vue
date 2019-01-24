@@ -19,7 +19,7 @@
         </v-fade-transition>
       </v-text-field>
 
-      <h2 class="display-1 success--text pl-3">
+      <h2 class="display-1 primary--text pl-3">
         Task: &nbsp;
         <v-fade-transition leave-absolute>
           <span :key="`tasks-${tasks.length}`">
