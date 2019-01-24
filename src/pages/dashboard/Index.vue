@@ -1,6 +1,8 @@
 <template>
   <v-layout row>
-    <v-flex sm6 md4 offset-sm3 offset-md4>
+    <v-flex sm8 md6 lg4 offset-sm2 offset-md3 offset-lg4>
+      <h3 class="font-weight-light mb-4">Hi {{ user.name }}, welcome back</h3>
+
       <v-text-field
         v-model="task"
         label="What are you working on ?"
@@ -88,6 +90,9 @@ export default {
     },
     remainingTasks() {
       return this.tasks.length - this.completedTasks;
+    },
+    user() {
+      return this.$store.state.auth.user;
     },
   },
   methods: {

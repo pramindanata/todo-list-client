@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <dashboard></dashboard>
+    <component :is="layout"></component>
   </div>
 </template>
 
@@ -8,6 +8,12 @@
 export default {
   components: {
     Dashboard: () => import('./layouts/Dashboard'),
+    Auth: () => import('./layouts/Auth'),
+  },
+  computed: {
+    layout() {
+      return this.$store.state.layout.current;
+    },
   },
 };
 </script>

@@ -1,8 +1,8 @@
-const routes = [
+export default [
   {
     path: '/',
     name: 'dashboard',
-    component: () => import('../pages/dashboard/Index.vue'),
+    component: () => import('../../pages/dashboard/Index.vue'),
   },
   {
     path: '/dashboard',
@@ -11,5 +11,3 @@ const routes = [
     },
   },
 ];
-
-export default routes;
