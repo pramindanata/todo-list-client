@@ -6,6 +6,12 @@
       </v-card-title>
 
       <v-card-text>
+        <alert-danger
+          :messages="alertMessages"
+          :alert="alert"
+          @set-alert="alert = $event"
+        ></alert-danger>
+
         <form>
           <v-text-field
             label="Email"
@@ -13,7 +19,7 @@
             prepend-icon="email"
             v-model="email"
             v-validate="'required|email'"
-            :error-messages="errors.collect('email')"
+            :error-messages="errorMessages('email')"
           ></v-text-field>
 
           <v-text-field
@@ -21,9 +27,9 @@
             prepend-icon="lock"
             name="password"
             v-model="password"
-            v-validate="'required'"
+            v-validate="'required|min:8'"
             :append-icon="passwordTextFieldIcon"
-            :error-messages="errors.collect('password')"
+            :error-messages="errorMessages('password')"
             :type="passwordTextFieldType"
             @click:append="showPassword = !showPassword"
           ></v-text-field>
@@ -31,6 +37,8 @@
           <v-btn
             block
             color="primary"
+            :disabled="loading"
+            :loading="loading"
             @click="submit"
           >
             Login
@@ -63,10 +71,17 @@
 
 <script>
 export default {
+  components: {
+    AlertDanger: () => import('../components/AlertDanger.vue'),
+  },
   data: () => ({
+    alert: false,
+    alertMessages: [],
     email: null,
-    showPassword: false,
+    fieldErrorMessages: null,
+    loading: false,
     password: null,
+    showPassword: false,
   }),
   computed: {
     passwordTextFieldIcon() {
@@ -77,18 +92,56 @@ export default {
     },
   },
   methods: {
+    errorMessages(name) {
+      if (this.errors.collect(name).length > 0) {
+        return this.errors.collect(name);
+      }
+
+      if (this.fieldErrorMessages != null) {
+        return this.fieldErrorMessages[name];
+      }
+
+      return [];
+    },
     async submit() {
+      this.alert = false;
+
       const validate = await this.$validator.validate();
 
       if (validate) {
-        this.$store.dispatch('auth/login');
-        this.$router.push({ name: 'dashboard' });
+        try {
+          this.loading = true;
+
+          const result = await this.$http.post('/login', {
+            email: this.email,
+            password: this.password,
+          });
+
+          this.loading = false;
+
+          if (result) {
+            this.$store.dispatch('auth/login');
+            this.$router.push({ name: 'dashboard' });
+          }
+        } catch (err) {
+          const res = err.response;
+
+          if (res.status === 400) {
+            this.fieldErrorMessages = res.data.messages;
+          } else {
+            this.alert = true;
+            this.alertMessages = res.data.messages;
+          }
+        }
+
+        this.loading = false;
       }
     },
     reset() {
       this.email = null;
       this.password = null;
       this.$validator.reset();
+      this.fieldErrorMessages = null;
     },
   },
 };

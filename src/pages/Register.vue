@@ -30,7 +30,7 @@
             prepend-icon="lock"
             name="password"
             v-model="password"
-            v-validate="'required'"
+            v-validate="'required|min:8'"
             :append-icon="passwordTextFieldIcon"
             :error-messages="errors.collect('password')"
             :type="passwordTextFieldType"
