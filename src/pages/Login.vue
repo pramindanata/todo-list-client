@@ -8,19 +8,22 @@
       <v-card-text>
         <form>
           <v-text-field
-            v-model="email"
             label="Email"
+            name="email"
             prepend-icon="email"
-            required
-            type="email"
+            v-model="email"
+            v-validate="'required|email'"
+            :error-messages="errors.collect('email')"
           ></v-text-field>
 
           <v-text-field
-            v-model="password"
             label="Password"
             prepend-icon="lock"
-            required
+            name="password"
+            v-model="password"
+            v-validate="'required'"
             :append-icon="passwordTextFieldIcon"
+            :error-messages="errors.collect('password')"
             :type="passwordTextFieldType"
             @click:append="showPassword = !showPassword"
           ></v-text-field>
@@ -62,13 +65,18 @@ export default {
     },
   },
   methods: {
-    submit() {
-      this.$store.dispatch('auth/login');
-      this.$router.push({ name: 'dashboard' });
+    async submit() {
+      const validate = await this.$validator.validate();
+
+      if (validate) {
+        this.$store.dispatch('auth/login');
+        this.$router.push({ name: 'dashboard' });
+      }
     },
     reset() {
       this.email = null;
       this.password = null;
+      this.$validator.reset();
     },
   },
 };
