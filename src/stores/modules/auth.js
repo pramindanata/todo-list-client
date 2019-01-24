@@ -1,3 +1,5 @@
+import localStorageService from '../../services/localStorage';
+
 /* eslint-disable no-param-reassign */
 export default {
   namespaced: true,
@@ -30,21 +32,29 @@ export default {
     },
     SET_TOKEN(state, token) {
       state.token = token;
+
+      localStorageService.setToken(token);
     },
     SET_USER(state, user) {
       state.user = {
         name: user.name,
         email: user.email,
       };
+
+      localStorageService.setUser(user);
     },
     REMOVE_TOKEN(state) {
       state.token = null;
+
+      localStorageService.removeToken();
     },
     REMOVE_USER(state) {
       state.user = {
         name: null,
         email: null,
       };
+
+      localStorageService.removeUser();
     },
   },
   actions: {
