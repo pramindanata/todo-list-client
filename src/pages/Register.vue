@@ -2,11 +2,20 @@
   <v-flex sm8 md6 lg3>
     <v-card>
       <v-card-title class="justify-center" primary-title>
-        <h2 class="font-weight-light primary--text">Welcome back</h2>
+        <h2 class="font-weight-light primary--text">Join Us</h2>
       </v-card-title>
 
       <v-card-text>
         <form>
+          <v-text-field
+            label="Name"
+            name="name"
+            prepend-icon="person"
+            v-model="name"
+            v-validate="'required|alpha_spaces|min:4'"
+            :error-messages="errors.collect('name')"
+          ></v-text-field>
+
           <v-text-field
             label="Email"
             name="email"
@@ -33,7 +42,7 @@
             color="primary"
             @click="submit"
           >
-            Login
+            Submit
           </v-btn>
 
           <v-btn
@@ -51,9 +60,9 @@
           <v-btn
             block
             color="accent"
-            :to="{ name: 'register' }"
+            :to="{ name: 'login' }"
           >
-            Create an account
+            Login Now
           </v-btn>
         </form>
       </v-card-text>
@@ -64,6 +73,7 @@
 <script>
 export default {
   data: () => ({
+    name: null,
     email: null,
     showPassword: false,
     password: null,
@@ -81,11 +91,11 @@ export default {
       const validate = await this.$validator.validate();
 
       if (validate) {
-        this.$store.dispatch('auth/login');
-        this.$router.push({ name: 'dashboard' });
+        this.$router.push({ name: 'login' });
       }
     },
     reset() {
+      this.name = null;
       this.email = null;
       this.password = null;
       this.$validator.reset();

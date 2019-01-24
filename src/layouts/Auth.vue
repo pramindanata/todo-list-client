@@ -3,7 +3,9 @@
     <V-content>
       <v-container fill-height>
         <v-layout align-center justify-center>
-          <router-view></router-view>
+          <transition name="fade">
+            <router-view></router-view>
+          </transition>
         </v-layout>
       </v-container>
     </V-content>
