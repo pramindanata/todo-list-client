@@ -6,20 +6,21 @@
       </v-card-title>
 
       <v-card-text>
-        <alert-danger
-          :messages="alertMessages"
+        <alerts
           :alert="alert"
-          @set-alert="alert = $event"
-        ></alert-danger>
+          @set-alert-error="alert.error.status = $event"
+          @set-alert-success="alert.success.status = $event"
+          @set-alert-warning="alert.warning.status = $event"
+        ></alerts>
 
-        <form>
+        <form @submit.prevent="submitListener">
           <v-text-field
             label="Email"
             name="email"
             prepend-icon="email"
             v-model="email"
             v-validate="'required|email'"
-            :error-messages="errorMessages('email')"
+            :error-messages="getErrorMessages('email')"
           ></v-text-field>
 
           <v-text-field
@@ -29,7 +30,7 @@
             v-model="password"
             v-validate="'required|min:8'"
             :append-icon="passwordTextFieldIcon"
-            :error-messages="errorMessages('password')"
+            :error-messages="getErrorMessages('password')"
             :type="passwordTextFieldType"
             @click:append="showPassword = !showPassword"
           ></v-text-field>
@@ -37,9 +38,9 @@
           <v-btn
             block
             color="primary"
+            type="submit"
             :disabled="loading"
             :loading="loading"
-            @click="submit"
           >
             Login
           </v-btn>
@@ -47,7 +48,7 @@
           <v-btn
             block
             color="secondary"
-            @click="reset"
+            @click="resetListener"
           >
             Reset
           </v-btn>
@@ -70,16 +71,17 @@
 </template>
 
 <script>
+import formMixin from '../mixins/form';
+
 export default {
+  mixins: [
+    formMixin,
+  ],
   components: {
-    AlertDanger: () => import('../components/AlertDanger.vue'),
+    Alerts: () => import('../components/Alerts.vue'),
   },
   data: () => ({
-    alert: false,
-    alertMessages: [],
     email: null,
-    fieldErrorMessages: null,
-    loading: false,
     password: null,
     showPassword: false,
   }),
@@ -92,56 +94,24 @@ export default {
     },
   },
   methods: {
-    errorMessages(name) {
-      if (this.errors.collect(name).length > 0) {
-        return this.errors.collect(name);
-      }
+    async resetListener() {
+      await this.reset();
 
-      if (this.fieldErrorMessages != null) {
-        return this.fieldErrorMessages[name];
-      }
-
-      return [];
-    },
-    async submit() {
-      this.alert = false;
-
-      const validate = await this.$validator.validate();
-
-      if (validate) {
-        try {
-          this.loading = true;
-
-          const result = await this.$http.post('/login', {
-            email: this.email,
-            password: this.password,
-          });
-
-          this.loading = false;
-
-          if (result) {
-            this.$store.dispatch('auth/login');
-            this.$router.push({ name: 'dashboard' });
-          }
-        } catch (err) {
-          const res = err.response;
-
-          if (res.status === 400) {
-            this.fieldErrorMessages = res.data.messages;
-          } else {
-            this.alert = true;
-            this.alertMessages = res.data.messages;
-          }
-        }
-
-        this.loading = false;
-      }
-    },
-    reset() {
       this.email = null;
       this.password = null;
-      this.$validator.reset();
-      this.fieldErrorMessages = null;
+    },
+    async submitListener() {
+      await this.submit({
+        method: 'post',
+        url: '/login',
+        data: {
+          email: this.email,
+          password: this.password,
+        },
+      });
+
+      this.$store.dispatch('auth/login');
+      this.$router.push({ name: 'dashboard' });
     },
   },
 };
