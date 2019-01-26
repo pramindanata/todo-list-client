@@ -3,7 +3,6 @@ import App from './App.vue';
 import router from './routers/index';
 import store from './stores/index';
 
-import './plugins/axios';
 import './plugins/vuetify';
 import './plugins/veeValidate';
 

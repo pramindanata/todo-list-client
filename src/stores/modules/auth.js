@@ -1,4 +1,6 @@
 /* eslint-disable no-param-reassign */
+import axios from '../../utils/axios';
+
 export default {
   namespaced: true,
   state: {
@@ -48,12 +50,22 @@ export default {
     },
   },
   actions: {
-    login({ commit }) {
-      commit('SET_STATUS_SUCCESS');
-      commit('SET_TOKEN', 123213123);
-      commit('SET_USER', {
-        name: 'Eksa',
-        email: 'pramindanata.eksa@gmail.com',
+    login({ commit }, { data }) {
+      return new Promise((resolve, reject) => {
+        axios.post('/login', data)
+          .then((res) => {
+            const { token, user } = res.data.data;
+
+            commit('SET_STATUS_SUCCESS');
+            commit('SET_TOKEN', token);
+            commit('SET_USER', {
+              name: user.name,
+              email: user.email,
+            });
+
+            resolve(res);
+          })
+          .catch(err => reject(err));
       });
     },
     logout({ commit }) {

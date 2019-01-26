@@ -1,13 +1,3 @@
-import { defaults } from 'lodash';
-
-const reqDefOpts = {
-  method: null,
-  url: null,
-  data: null,
-  params: null,
-  headers: null,
-};
-
 export default {
   data: () => ({
     alert: {
@@ -32,12 +22,7 @@ export default {
      * Submit listener
      * @param {Object} options
      */
-    async submit(options) {
-      const opts = defaults(options, {
-        scope: null,
-        ...reqDefOpts,
-      });
-
+    submit(action, payload, scope = null) {
       this.alert.error.status = false;
       this.alert.success.status = false;
       this.alert.warning.status = false;
@@ -47,20 +32,47 @@ export default {
 
       // Validate it
       return new Promise(async (resolve, reject) => {
-        const validate = await this.validate(opts.scope);
+        const validate = await this.validate(scope);
 
         if (validate) {
           try {
-            const response = await this.sendFormRequest({
-              method: opts.method,
-              url: opts.url,
-              data: opts.data,
-              params: opts.params,
-              headers: opts.headers,
-            });
+            this.loading = true;
+
+            const response = await this.$store.dispatch(action, payload);
+            // Set success alert
+            if (response.data.messages) {
+              this.alert.success.status = true;
+              this.alert.success.messages = [response.data.messages];
+            }
+
+            this.loading = false;
 
             resolve(response);
           } catch (err) {
+            // Get errors and stop loading
+            const res = err.response;
+
+            // Error when response not exists
+            if (!res) {
+              this.alert.error.status = true;
+              this.alert.error.messages = [err.message];
+            }
+
+            // Error when response exists
+            if (res) {
+              if (res.status === 400) {
+                // Bad request / Form validation error
+                this.serverSideErrorMessages = res.data.messages;
+              } else {
+                // Other error(s)
+                this.alert.error.status = true;
+                this.alert.error.messages = res.data.messages;
+              }
+            }
+
+            this.loading = false;
+
+            // Reject to add additional handler on component side
             reject(err);
           }
         }
@@ -95,70 +107,6 @@ export default {
         this.serverSideErrorMessages = [];
 
         resolve();
-      });
-    },
-
-    /**
-     * Compose axios and send request
-     * @param {Object} options
-     */
-    sendFormRequest(options) {
-      const opts = defaults(options, reqDefOpts);
-
-      const config = {
-        method: opts.method,
-        url: opts.url,
-      };
-
-      // Setup additional config
-      if (opts.data) config.data = opts.data;
-      if (opts.params) config.params = opts.params;
-      if (opts.headers) config.headers = opts.headers;
-
-      return new Promise(async (resolve, reject) => {
-        try {
-          // Start loading, send request, and stop loading
-          this.loading = true;
-
-          const response = await this.$http(config);
-          const { data: responseData } = response;
-
-          // Set success alert
-          if (responseData.messages) {
-            this.alert.success.status = true;
-            this.alert.success.messages = [responseData.messages];
-          }
-
-          this.loading = false;
-
-          resolve(response);
-        } catch (err) {
-          // Get errors and stop loading
-          const res = err.response;
-
-          // Error when response not exists
-          if (!res) {
-            this.alert.error.status = true;
-            this.alert.error.messages = [err.message];
-          }
-
-          // Error when response exists
-          if (res) {
-            if (res.status === 400) {
-              // Bad request / Form validation error
-              this.serverSideErrorMessages = res.data.messages;
-            } else {
-              // Other error(s)
-              this.alert.error.status = true;
-              this.alert.error.messages = res.data.messages;
-            }
-          }
-
-          this.loading = false;
-
-          // Reject to add additional handler on component side
-          reject(err);
-        }
       });
     },
 

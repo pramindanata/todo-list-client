@@ -101,16 +101,13 @@ export default {
       this.password = null;
     },
     async submitListener() {
-      await this.submit({
-        method: 'post',
-        url: '/login',
+      await this.submit('auth/login', {
         data: {
           email: this.email,
           password: this.password,
         },
       });
 
-      this.$store.dispatch('auth/login');
       this.$router.push({ name: 'dashboard' });
     },
   },
