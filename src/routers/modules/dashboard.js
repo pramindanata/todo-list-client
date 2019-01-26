@@ -10,4 +10,9 @@ export default [
       name: 'dashboard',
     },
   },
+  {
+    path: '/demo',
+    name: 'demo',
+    component: () => import('../../pages/Demo.vue'),
+  },
 ];

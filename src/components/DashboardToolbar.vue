@@ -14,6 +14,9 @@
 
     <v-spacer></v-spacer>
 
+    <v-btn icon :to="{ name: 'demo' }">
+      <v-icon>person</v-icon>
+    </v-btn>
     <v-btn icon @click="logout">
       <v-icon>exit_to_app</v-icon>
     </v-btn>

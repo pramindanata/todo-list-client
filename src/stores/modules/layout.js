@@ -11,7 +11,7 @@ export default {
     },
   },
   actions: {
-    updateLayout({ commit }, layoutName) {
+    update({ commit }, layoutName) {
       if (layoutName === 'auth' || layoutName === 'dashboard') {
         commit('SET_CURRENT_LAYOUT', layoutName);
       } else {

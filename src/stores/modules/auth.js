@@ -13,7 +13,7 @@ export default {
   },
   getters: {
     isAuthenticated(state) {
-      if (state.status === 'success' && state.token && state.user.name && state.user.email) {
+      if (state.token) {
         return true;
       }
 
@@ -50,27 +50,26 @@ export default {
     },
   },
   actions: {
-    login({ commit }, { data }) {
+    login({ commit, dispatch }, { data }) {
       return new Promise((resolve, reject) => {
         axios.post('/login', data)
           .then((res) => {
-            const { token, user } = res.data.data;
+            const { token } = res.data.data;
 
             commit('SET_STATUS_SUCCESS');
             commit('SET_TOKEN', token);
-            commit('SET_USER', {
-              name: user.name,
-              email: user.email,
-            });
+            dispatch('layout/update', 'dashboard', { root: true });
 
             resolve(res);
           })
           .catch(err => reject(err));
       });
     },
-    logout({ commit }) {
+    logout({ commit, dispatch }) {
+      commit('SET_STATUS_FAILED');
       commit('REMOVE_TOKEN');
       commit('REMOVE_USER');
+      dispatch('layout/update', 'auth', { root: true });
     },
   },
 };

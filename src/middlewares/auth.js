@@ -4,7 +4,9 @@ export default router => router.beforeEach((to, from, next) => {
   const isAuthenticated = store.getters['auth/isAuthenticated'];
 
   if (isAuthenticated) {
-    store.dispatch('layout/updateLayout', 'dashboard');
+    if (store.state.layout.current !== 'dashboard') {
+      store.dispatch('layout/update', 'dashboard');
+    }
 
     if (to.name === 'login' || to.name === 'register') {
       return next({ name: 'dashboard' });
@@ -13,7 +15,9 @@ export default router => router.beforeEach((to, from, next) => {
     return next();
   }
 
-  store.dispatch('layout/updateLayout', 'auth');
+  if (store.state.layout.current !== 'auth') {
+    store.dispatch('layout/update', 'auth');
+  }
 
   if (to.name === 'login' || to.name === 'register') {
     return next();
