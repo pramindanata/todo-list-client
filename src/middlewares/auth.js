@@ -1,6 +1,15 @@
 import store from '../stores/index';
 
 export default router => router.beforeEach((to, from, next) => {
+  // Get token from local storage. Prevent empty token on other tabs inside vuex state.
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    store.commit('auth/SET_TOKEN', token);
+  } else {
+    store.commit('auth/REMOVE_TOKEN', token);
+  }
+
   const isAuthenticated = store.getters['auth/isAuthenticated'];
 
   if (isAuthenticated) {

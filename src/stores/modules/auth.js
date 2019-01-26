@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+import { set, clear } from 'local-storage';
 import axios from '../../utils/axios';
 
 export default {
@@ -58,6 +59,10 @@ export default {
 
             commit('SET_STATUS_SUCCESS');
             commit('SET_TOKEN', token);
+
+            // Set in local storage
+            set('token', token);
+
             dispatch('layout/update', 'dashboard', { root: true });
 
             resolve(res);
@@ -69,6 +74,10 @@ export default {
       commit('SET_STATUS_FAILED');
       commit('REMOVE_TOKEN');
       commit('REMOVE_USER');
+
+      // Clear local storage
+      clear();
+
       dispatch('layout/update', 'auth', { root: true });
     },
   },
