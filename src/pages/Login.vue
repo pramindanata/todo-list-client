@@ -101,14 +101,19 @@ export default {
       this.password = null;
     },
     async submitListener() {
-      await this.submit('auth/login', {
-        data: {
-          email: this.email,
-          password: this.password,
-        },
-      });
+      try {
+        await this.submit('auth/login', {
+          data: {
+            email: this.email,
+            password: this.password,
+          },
+        });
 
-      this.$router.push({ name: 'dashboard' });
+        this.$router.push({ name: 'dashboard' });
+      } catch (err) {
+        this.password = null;
+        this.$validator.reset();
+      }
     },
   },
 };
