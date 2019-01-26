@@ -1,7 +1,7 @@
 <template>
   <v-layout row>
     <v-flex sm8 md6 lg4 offset-sm2 offset-md3 offset-lg4>
-      <h3 class="font-weight-light mb-4">Hi {{ user.name }}, welcome back</h3>
+      <h3 v-if="showUser" class="font-weight-light mb-4">Hi {{ user.name }}, welcome back</h3>
 
       <v-text-field
         v-model="task"
@@ -80,6 +80,7 @@ export default {
   data: () => ({
     task: null,
     tasks: [],
+    showUser: false,
   }),
   computed: {
     completedTasks() {
@@ -104,6 +105,15 @@ export default {
 
       this.task = null;
     },
+  },
+  created() {
+    this.$store.dispatch('auth/getUser')
+      .then(() => {
+        this.showUser = true;
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
   },
 };
 </script>

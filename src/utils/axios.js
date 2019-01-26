@@ -1,10 +1,16 @@
+/* eslint-disable no-param-reassign */
 import axios from 'axios';
-// import store from '../stores/index';
 
 axios.defaults.baseURL = 'http://localhost:4000';
 
-// if (store.state.auth.token) {
-//   Axios.defaults.headers.common.Authorization = `Bearer ${store.state.auth.token}`;
-// }
+axios.interceptors.request.use((config) => {
+  const token = JSON.parse(localStorage.getItem('token'));
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
 
 export default axios;
