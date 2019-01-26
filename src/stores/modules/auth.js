@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-param-reassign */
 
-import { set, clear } from 'local-storage';
+import { clear } from 'local-storage';
 import axios from '../../utils/axios';
 
 const state = {
@@ -35,6 +35,9 @@ const mutations = {
   },
   SET_TOKEN(state, token) {
     state.token = token;
+
+    // Set in local storage
+    localStorage.setItem('token', token);
   },
   SET_USER(state, user) {
     state.user = {
@@ -78,9 +81,6 @@ const actions = {
 
           commit('SET_STATUS_SUCCESS');
           commit('SET_TOKEN', token);
-
-          // Set in local storage
-          set('token', token);
 
           dispatch('layout/update', 'dashboard', { root: true });
 
