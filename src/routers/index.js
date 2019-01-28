@@ -3,6 +3,7 @@ import VueRouter from 'vue-router';
 
 import dashboard from './modules/dashboard';
 import auth from './modules/auth';
+import other from './modules/other';
 
 import authGuard from '../middlewares/auth';
 
@@ -13,6 +14,7 @@ const router = new VueRouter({
   routes: [
     ...auth,
     ...dashboard,
+    ...other,
   ],
 });
 
