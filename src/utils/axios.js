@@ -35,10 +35,14 @@ axios.interceptors.request.use((config) => {
 });
 
 axios.interceptors.response.use(res => res, (err) => {
-  const { config, response: { status, data } } = err;
+  const { config, response } = err;
   const originalReq = config;
 
-  if (status === 401 && data === 'Unauthorized') {
+  if (!response) {
+    return Promise.reject(err);
+  }
+
+  if (response.status === 401 && response.data === 'Unauthorized') {
     if (!isRefreshing) {
       isRefreshing = true;
 
