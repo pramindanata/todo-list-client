@@ -63,7 +63,7 @@
           <todo-item
             v-for="(task, i) in tasks"
             :i="i"
-            :key="`todo-${i}`"
+            :key="`todo-${task._id}`"
             :task="task"></todo-item>
         </v-slide-y-transition>
       </v-card>
@@ -72,6 +72,7 @@
 </template>
 
 <script>
+import store from '../../stores/index';
 
 export default {
   components: {
@@ -79,12 +80,11 @@ export default {
   },
   data: () => ({
     task: null,
-    tasks: [],
     showUser: false,
   }),
   computed: {
     completedTasks() {
-      return this.tasks.filter(task => task.done).length;
+      return this.tasks.filter(task => task.completed).length;
     },
     progress() {
       return this.completedTasks / this.tasks.length * 100;
@@ -92,22 +92,32 @@ export default {
     remainingTasks() {
       return this.tasks.length - this.completedTasks;
     },
+    tasks() {
+      return store.state.todo.todos;
+    },
     user() {
-      return this.$store.state.auth.user;
+      return store.state.auth.user;
     },
   },
   methods: {
     create() {
-      this.tasks.push({
-        text: this.task,
-        done: false,
+      store.dispatch('todo/restStore', {
+        title: this.task,
+      }).then(() => {
+        this.task = null;
       });
-
-      this.task = null;
     },
   },
+  beforeRouteEnter(to, from, next) {
+    if (!store.state.todo.todos) {
+      return store.dispatch('todo/restIndex')
+        .then(() => next());
+    }
+
+    return next(vm => vm.$store.dispatch('todo/restIndex'));
+  },
   created() {
-    this.$store.dispatch('auth/getUser')
+    store.dispatch('auth/getUser')
       .then(() => {
         this.showUser = true;
       })
